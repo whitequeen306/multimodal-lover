@@ -25,3 +25,7 @@ export function uploadAvatar(file) {
   fd.append('file', file)
   return api.post('/character/avatar-upload', fd)
 }
+
+export function generateCharacter(characterName) {
+  return api.post('/character/generate', { characterName })
+}
