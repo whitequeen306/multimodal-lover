@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <name>MultiModal-Lover</name>
-    <description>Multi-modal Virtual Lover — Qiniu Training Camp Project</description>
+    <description>Spring Boot 多模块后端 — VL JSON 识图、视觉对话流水线、REST/SSE、Flyway</description>
 
     <modules>
         <module>virtual-lover-common</module>
