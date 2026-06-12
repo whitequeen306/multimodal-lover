@@ -16,6 +16,6 @@ RUN mvn -B -s settings-docker.xml -DskipTests package
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/virtual-lover-app/target/*.jar app.jar
+COPY --from=builder /app/virtual-lover-app/target/virtual-lover-app-*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
