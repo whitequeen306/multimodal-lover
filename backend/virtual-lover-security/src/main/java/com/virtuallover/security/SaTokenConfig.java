@@ -1,25 +1,15 @@
 package com.virtuallover.security;
 
-import cn.dev33.satoken.dao.SaTokenDao;
-import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SaTokenConfig implements WebMvcConfigurer {
 
-    @Bean
-    public SaTokenDao saTokenDao(@Autowired RedisConnectionFactory connectionFactory) {
-        SaTokenDaoRedisJackson dao = new SaTokenDaoRedisJackson();
-        dao.init(connectionFactory);
-        return dao;
-    }
+    // SaTokenDao 由 Sa-Token 自动配置创建（sa-token-redis-jackson 自动装配），无需手动定义
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
