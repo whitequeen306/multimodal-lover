@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: multimodal-lover
+  ai:
+    openai:
+      api-key: dummy  # 占位，防止自动配置报错；实际 API key 在 lover.ai 下各自配置
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/multimodal_lover?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: ${MYSQL_USER:root}
