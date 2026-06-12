@@ -73,8 +73,23 @@
             placeholder="描述角色的性格特点..."
           />
         </el-form-item>
-        <el-form-item label="头像 URL" prop="avatarUrl">
-          <el-input v-model="dialogForm.avatarUrl" placeholder="可选，输入图片 URL" />
+        <el-form-item label="角色头像">
+          <div class="avatar-upload">
+            <div class="avatar-preview" v-if="dialogForm.avatarUrl">
+              <img :src="dialogForm.avatarUrl" alt="预览" />
+              <el-button type="danger" size="small" circle @click="dialogForm.avatarUrl = ''">×</el-button>
+            </div>
+            <el-upload
+              v-else
+              :show-file-list="false"
+              :before-upload="handleAvatarUpload"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              drag
+            >
+              <el-icon :size="32"><Plus /></el-icon>
+              <div>点击或拖拽上传头像</div>
+            </el-upload>
+          </div>
         </el-form-item>
         <el-form-item label="角色设定 (System Prompt)" prop="systemPrompt">
           <el-input
@@ -100,7 +115,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Edit, Delete, User, SwitchButton } from '@element-plus/icons-vue'
-import { listCharacters, createCharacter, updateCharacter, deleteCharacter } from '@/api/character'
+import { listCharacters, createCharacter, updateCharacter, deleteCharacter, uploadAvatar } from '@/api/character'
 import { createConversation, listConversations } from '@/api/conversation'
 
 const router = useRouter()
@@ -165,6 +180,19 @@ function openEditDialog(char) {
   dialogForm.avatarUrl = char.avatarUrl || ''
   dialogForm.systemPrompt = char.systemPrompt || ''
   dialogVisible.value = true
+}
+
+async function handleAvatarUpload(file) {
+  const isImage = file.type.startsWith('image/')
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isImage) { ElMessage.error('只能上传图片文件'); return false }
+  if (!isLt5M) { ElMessage.error('图片大小不能超过 5MB'); return false }
+  try {
+    const res = await uploadAvatar(file)
+    dialogForm.avatarUrl = res.data?.avatarUrl || ''
+    ElMessage.success('头像上传成功')
+  } catch { /* handled by interceptor */ }
+  return false // 阻止 el-upload 的默认上传行为
 }
 
 async function handleDialogSubmit() {
