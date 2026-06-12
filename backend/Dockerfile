@@ -9,10 +9,9 @@ COPY virtual-lover-ai/pom.xml virtual-lover-ai/
 COPY virtual-lover-service/pom.xml virtual-lover-service/
 COPY virtual-lover-web/pom.xml virtual-lover-web/
 COPY virtual-lover-app/pom.xml virtual-lover-app/
-COPY settings-docker.xml .
-RUN mvn -B -s settings-docker.xml dependency:go-offline
+RUN mvn -B dependency:go-offline
 COPY . .
-RUN mvn -B -s settings-docker.xml -DskipTests package
+RUN mvn -B -DskipTests package
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
