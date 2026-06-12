@@ -23,7 +23,5 @@ export function deleteCharacter(id) {
 export function uploadAvatar(file) {
   const fd = new FormData()
   fd.append('file', file)
-  return api.post('/character/avatar-upload', fd, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  return api.post('/character/avatar-upload', fd)
 }
