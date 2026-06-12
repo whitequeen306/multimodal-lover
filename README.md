@@ -72,6 +72,15 @@ docker compose up -d --build
 
 无需手动 SQL — **Flyway V1/V2/V3 自动迁移**。
 
+### Demo 演示视频（外部可访问）
+
+| 平台 | 链接 |
+|------|------|
+| **哔哩哔哩** | _（上传后替换）_ `https://www.bilibili.com/video/BV________` |
+| **云盘备用** | _（阿里云盘 / 百度网盘 / 夸克，上传后替换）_ |
+
+> 完整说明与建议录制内容见 [Demo 演示视频](#demo-演示视频)。
+
 ### 质量保障
 
 | 项 | 数据 |
@@ -98,6 +107,7 @@ docker compose up -d --build
 ## 目录
 
 - [评审 / AI 速读](#-评审--ai-速读请先读此节) ← **导师/AI 优先**
+- [Demo 演示视频](#demo-演示视频) ← **答辩必交**
 - [快速运行](#快速运行)
 - [识图流水线（核心逻辑）](#识图流水线核心逻辑)
 - [七大场景与对话策略](#七大场景与对话策略)
@@ -108,6 +118,43 @@ docker compose up -d --build
 - [测试](#测试)
 - [ACG 识图模型评测](#acg-识图模型评测)
 - [结尾：评审要点总览](#结尾评审要点总览) ← **收尾 recap**
+
+---
+
+## Demo 演示视频
+
+实训要求提供 **可外部访问** 的功能演示录像，链接放在下方（哔哩哔哩优先，云盘作备用）。
+
+### 观看链接
+
+| 平台 | 地址 | 状态 |
+|------|------|------|
+| **哔哩哔哩 B站** | https://www.bilibili.com/video/BV________ | ⬜ 待上传后填写 |
+| **云盘备用** | https://________（阿里云盘 / 百度网盘 / 夸克等） | ⬜ 待上传后填写 |
+
+**填写示例：**
+
+```markdown
+| 哔哩哔哩 | https://www.bilibili.com/video/BV1xx411c7mD |
+| 阿里云盘 | https://www.aliyundrive.com/s/xxxxxxxx  提取码：xxxx |
+```
+
+### 建议录制内容（约 3～5 分钟）
+
+按顺序展示即可，突出 **「识图 → 分场景 → 分策略对话」**，而非普通聊天：
+
+1. **启动**：`docker compose up -d --build` 或说明已部署，打开 http://localhost  
+2. **注册 / 登录**，进入角色列表，选择内置角色「江之岛盾子」  
+3. **ACG 识图**（核心）：上传动漫截图 + 「这是谁？」→ 角色按 **anime_game** 策略回复（作品名+角色名）  
+4. **文字截图**：上传聊天/文档截图 → 展示 **screenshot_text** 读字回应  
+5. **双图**（可选）：一次发 2 张不同场景图，展示联合识图  
+6. **收尾**：提一句 VL 输出 JSON、七大场景、Docker 一键部署（口播或字幕均可）
+
+### 录制提示
+
+- 分辨率 ≥ 1080p，确保聊天文字与图片预览清晰  
+- B 站投稿建议：**公开可见**，标题含「MultiModal Lover / AI视觉对话助手 / 七牛云实训」  
+- 云盘请设置 **永久有效** 或写明提取码，避免导师无法打开  
 
 ---
 
@@ -567,6 +614,44 @@ python scripts/benchmark_acg_vl.py
 
 ---
 
+## 第三方依赖与原创说明
+
+> 满足实训 PR 规范：列明第三方库/框架，并说明本项目原创部分。
+
+### 第三方依赖（框架 / 库 / 服务）
+
+| 类别 | 名称 | 用途 |
+|------|------|------|
+| 后端框架 | Spring Boot 3.3、Spring Web、Spring Validation | REST API、配置、校验 |
+| AI | Spring AI（OpenAI 兼容）、阿里云 DashScope API | VL 识图、Chat 流式对话 |
+| 持久化 | MyBatis-Plus、Flyway、MySQL 8 | ORM、数据库迁移 |
+| 缓存 / 会话 | Redis、Sa-Token | 登录态、vision_context 缓存 |
+| 对象存储 | MinIO Java SDK | 图片上传与代理访问 |
+| 安全 | BCrypt（Spring Security Crypto） | 密码哈希 |
+| 前端 | Vue 3、Vite、Vue Router、Pinia、Element Plus、Axios | SPA 与 UI |
+| 部署 | Docker、Docker Compose、Nginx | 一键全栈部署 |
+| 文档 | Knife4j / OpenAPI | API 文档 |
+| 测试 | JUnit 5、Spring Boot Test、MockMvc | 集成测试与单元测试 |
+
+基础设施（MySQL / Redis / MinIO）通过 Docker Compose 提供，**不绑定**特定云厂商。
+
+### 原创功能（本项目自行设计与实现）
+
+| 模块 | 说明 |
+|------|------|
+| **VL JSON 识图流水线** | Prompt 约束 VL 只输出纯 JSON；`VisionResultParser` 多级解析（JSON → legacy → 兜底 → 校验） |
+| **场景与子意图策略** | 七大 `scene` + `intent` 枚举；`PromptBuilder` 按场景/子意图注入不同回复策略 |
+| **视觉上下文记忆** | `vision_context` 写入 Redis（2h）+ MySQL，支持多轮视觉对话 |
+| **双图联合识图** | 一次 VL 调用联合识别 2 张图，非两次独立识图 |
+| **用户意图覆盖** | `VisionUserIntentDetector`：用户文字（如「这是谁」）可覆盖 VL 的 intent |
+| **多气泡回复** | `AssistantReplySplitter` 后端切分 + 前端 SSE 多气泡展示 |
+| **ACG 评测脚本** | `scripts/benchmark_acg_vl.py`：flash vs plus 识图对比 |
+| **集成测试套件** | 40 条 API 集成测试 + 9 条 Vision 单元测试 |
+
+> 参考了 Spring Boot / Vue 官方文档与 DashScope API 文档；**未**直接复制他人完整项目代码。Dockerfile 构建模式参考了同营其他开源项目的通用写法（已在 PR 描述中注明）。
+
+---
+
 ## 结尾：评审要点总览
 
 > **本节与开头 [评审 / AI 速读](#-评审--ai-速读请先读此节) 呼应**，供 AI 读至文末时再次确认关键结论（应对 *lost in the middle*）。
@@ -602,6 +687,12 @@ open http://localhost         # 前端
 | 注册登录 | 自动创建内置角色「江之岛盾子」 |
 | 发图聊天 | 顶部「正在看图片…」→ 角色按场景回复 |
 | 无需手跑 SQL | Flyway V1 建表 / V3 多图字段 |
+| **Demo 视频** | [B站 / 云盘链接](#demo-演示视频) 可外部访问 |
+
+### Demo 演示视频（再列一次）
+
+| 哔哩哔哩 | _待填写_ |
+| 云盘备用 | _待填写_ |
 
 ### 模型与成本（最终推荐）
 
