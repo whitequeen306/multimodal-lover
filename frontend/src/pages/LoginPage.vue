@@ -125,7 +125,7 @@ async function handleSubmit() {
 
     const fn = isRegister.value ? register : login
     const res = await fn(data)
-    const token = res.data?.tokenInfo?.tokenValue || res.data?.token
+    const token = res.data?.token
     if (token) {
       localStorage.setItem('vlover-token', token)
       ElMessage.success(isRegister.value ? '注册成功' : '登录成功')

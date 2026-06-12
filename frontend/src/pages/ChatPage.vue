@@ -213,7 +213,7 @@ async function loadConversation(id) {
 async function loadMessages(id) {
   try {
     const res = await getMessages(id, { limit: 100 })
-    messages.value = (res.data?.records || res.data || []).map(m => ({
+    messages.value = (res.data || []).map(m => ({
       ...m,
       role: (m.role || '').toLowerCase(),
       _key: m.id || m.seq || Math.random()
