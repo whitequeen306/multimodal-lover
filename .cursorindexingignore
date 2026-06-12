@@ -1,3 +1,3 @@
-
+# Cursor 索引导 ignore — 排除 SpecStory 自动保存
 # Don't index SpecStory auto-save files, but allow explicit context inclusion via @ references
 .specstory/**
