@@ -4,6 +4,14 @@ server:
 spring:
   application:
     name: multimodal-lover
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/multimodal_lover?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: ${MYSQL_USER:root}
@@ -17,11 +25,6 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 10MB
-
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
