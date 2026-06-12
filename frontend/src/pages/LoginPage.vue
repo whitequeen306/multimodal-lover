@@ -2,8 +2,9 @@
   <div class="login-page">
     <div class="login-card">
       <div class="login-header">
+        <div class="login-logo">♡</div>
         <h1 class="app-title">MultiModal Lover</h1>
-        <p class="app-subtitle">与你心爱的角色相遇</p>
+        <p class="app-subtitle">与你心爱的角色，在深夜私信里相遇</p>
       </div>
 
       <el-form
@@ -149,62 +150,84 @@ async function handleSubmit() {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 40%, #e8eaf6 100%);
+  padding: 24px;
 }
 
 .login-card {
   position: relative;
   z-index: 2;
   width: 420px;
-  max-width: 90vw;
-  padding: 40px 36px 32px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 40px rgba(236, 64, 122, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(236, 64, 122, 0.08);
+  max-width: 100%;
+  padding: 44px 36px 36px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 107, 122, 0.12);
+  animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
+}
+
+.login-logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(255, 107, 122, 0.45);
 }
 
 .app-title {
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #ec407a, #7c4dff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   margin-bottom: 8px;
+  letter-spacing: 0.04em;
 }
 
 .app-subtitle {
   font-size: 14px;
-  color: #9e9e9e;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #ec407a, #7c4dff) !important;
-  border: none !important;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
-}
-
-.submit-btn:hover {
-  opacity: 0.9;
+  letter-spacing: 0.06em;
+  box-shadow: 0 6px 24px rgba(255, 107, 122, 0.35);
 }
 
 .toggle-mode {
   text-align: center;
-  margin-top: 8px;
+  margin-top: 12px;
   font-size: 14px;
-  color: #9e9e9e;
+  color: var(--text-muted);
 }
 
-/* Decorative background elements */
 .login-bg-decor {
   position: absolute;
   inset: 0;
@@ -215,31 +238,38 @@ async function handleSubmit() {
 .decor-circle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.15;
+  filter: blur(60px);
 }
 
 .decor-1 {
-  width: 400px;
-  height: 400px;
-  background: linear-gradient(135deg, #ec407a, #f48fb1);
-  top: -100px;
-  right: -80px;
+  width: 360px;
+  height: 360px;
+  background: rgba(255, 107, 122, 0.18);
+  top: -80px;
+  right: -60px;
+  animation: float 8s ease-in-out infinite;
 }
 
 .decor-2 {
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(135deg, #7c4dff, #b388ff);
-  bottom: -60px;
-  left: -60px;
+  width: 280px;
+  height: 280px;
+  background: rgba(232, 69, 97, 0.12);
+  bottom: -40px;
+  left: -40px;
+  animation: float 10s ease-in-out infinite reverse;
 }
 
 .decor-3 {
-  width: 200px;
-  height: 200px;
-  background: linear-gradient(135deg, #f48fb1, #7c4dff);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 179, 188, 0.1);
+  top: 40%;
+  left: 55%;
+  animation: float 12s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(12px, -16px); }
 }
 </style>

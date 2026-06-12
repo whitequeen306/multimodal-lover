@@ -24,7 +24,8 @@ export function uploadImage(file) {
   const formData = new FormData()
   formData.append('file', file)
   // 不要手动设 Content-Type，浏览器会自动加 boundary
-  return api.post('/conversation/upload-image', formData)
+  // 上传与 VL 预识图解耦，仅传文件到 MinIO，不应长时间阻塞
+  return api.post('/conversation/upload-image', formData, { timeout: 60000 })
 }
 
 /**
