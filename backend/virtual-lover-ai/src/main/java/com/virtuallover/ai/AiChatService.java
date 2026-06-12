@@ -189,6 +189,69 @@ public class AiChatService {
                 .build();
     }
 
+    /**
+     * AI 生成角色设定：输入动漫/游戏角色名 → 返回人设 JSON
+     */
+    public String generateCharacterPersona(String characterName) {
+        String systemPrompt = buildPersonaGenerationPrompt();
+        String userPrompt = "请为角色「" + characterName + "」生成完整的人设设定。";
+
+        OpenAiApi chatApi = OpenAiApi.builder()
+                .baseUrl(normalizeBaseUrl(chatBaseUrl))
+                .apiKey(chatApiKey)
+                .build();
+        OpenAiChatModel chatModelInstance = OpenAiChatModel.builder()
+                .openAiApi(chatApi)
+                .defaultOptions(OpenAiChatOptions.builder().model(this.chatModel).build())
+                .build();
+
+        Prompt prompt = new Prompt(
+                List.of(new SystemMessage(systemPrompt), new UserMessage(userPrompt)),
+                OpenAiChatOptions.builder()
+                        .model(this.chatModel)
+                        .temperature(0.7)
+                        .maxTokens(800)
+                        .build());
+
+        ChatResponse response = chatModelInstance.call(prompt);
+        String text = extractText(response);
+        if (text == null || text.isBlank()) {
+            throw new RuntimeException("AI 生成失败，请稍后重试");
+        }
+        return text.trim();
+    }
+
+    private String buildPersonaGenerationPrompt() {
+        return """
+                你是一个专业的二次元角色设定生成器。用户会输入一个动漫或游戏角色的名字，你需要生成该角色的详细人设。
+
+                ## 必做流程
+                - 先确认角色来源作品、时间线阶段、核心关系、官方/公认称呼，再写设定。
+                - 至少基于你对该角色的知识（原作设定/官方资料/权威百科），避免凭印象写。
+
+                ## 人设写作标准
+                - 禁止模板化泛用称呼；必须使用该角色在原作中自然会用的称呼。
+                - 体现角色「外在语气 + 内在动机 + 关系演化」，不能只写几句空泛形容词。
+                - 包含明确约束：不跳出设定、不自称 AI、不使用与角色不符的口癖。
+
+                ## 输出格式（严格 JSON，不要输出其他内容）
+                你必须严格按照以下 JSON 格式输出，不要加 markdown 代码块标记：
+
+                {
+                  "name": "角色名",
+                  "personality": "性格描述（100-200字）：包括外在语气、内在动机、核心价值观、行为边界",
+                  "speakingStyle": "说话风格（40-80字）：口癖、语速、称呼习惯、情绪表达方式",
+                  "backstory": "背景故事（150-300字）：原作出处、关键经历、与用户的关系定位、世界观融入方式"
+                }
+
+                ## 最低质量门槛
+                - personality 必须包含：一句高密度性格总结 + 行为边界
+                - speakingStyle 必须包含：称呼习惯 + 口癖 + 情绪表达特点
+                - backstory 必须包含：原作来源 + 角色定位 + 与用户的关系
+                - 所有字段禁止使用"温柔可爱""傲娇毒舌"等空泛模板词——必须有具体表现和场景
+                """;
+    }
+
     // ---- private helpers ----
 
     private byte[] downloadImage(String imageUrl) {
