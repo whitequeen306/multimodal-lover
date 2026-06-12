@@ -1,0 +1,1 @@
+-- H2 test profile: builtin character seed is created at runtime on register

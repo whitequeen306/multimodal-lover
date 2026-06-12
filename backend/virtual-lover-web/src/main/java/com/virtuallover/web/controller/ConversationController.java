@@ -7,12 +7,14 @@ import com.virtuallover.dao.entity.Message;
 import com.virtuallover.service.ConversationService;
 import com.virtuallover.service.dto.CreateConversationRequest;
 import com.virtuallover.service.dto.SendMessageRequest;
-import com.virtuallover.storage.QiniuStorageService;
+import com.virtuallover.storage.MinioStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -26,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ConversationController {
     private final ConversationService conversationService;
-    private final QiniuStorageService qiniuStorageService;
+    private final MinioStorageService minioStorageService;
 
     @PostMapping
     public Result<Conversation> create(@Valid @RequestBody CreateConversationRequest request) {
@@ -36,6 +38,20 @@ public class ConversationController {
     @GetMapping
     public Result<List<Conversation>> list() {
         return Result.ok(conversationService.listConversations(StpUtil.getLoginIdAsLong()));
+    }
+
+    @Operation(summary = "聊天图片代理（从 MinIO 读取，仅允许 chat-images 路径）")
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> proxyImage(@RequestParam("url") String url) {
+        byte[] bytes = minioStorageService.tryFetchImageBytes(url);
+        if (bytes == null || bytes.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = minioStorageService.guessContentType(url);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "private, max-age=3600")
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(bytes);
     }
 
     @GetMapping("/{id}")
@@ -51,7 +67,8 @@ public class ConversationController {
 
     @PostMapping("/upload-image")
     public Result<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-        String url = qiniuStorageService.uploadChatImage(file, StpUtil.getLoginIdAsLong());
+        String url = minioStorageService.uploadChatImage(file, StpUtil.getLoginIdAsLong());
+        conversationService.preDescribeImageAsync(url);
         return Result.ok(Map.of("imageUrl", url));
     }
 

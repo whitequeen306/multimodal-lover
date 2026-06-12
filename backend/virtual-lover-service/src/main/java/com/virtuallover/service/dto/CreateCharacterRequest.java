@@ -12,4 +12,6 @@ public class CreateCharacterRequest {
     private String personality;
     private String speakingStyle;
     private String backstory;
+    @NotBlank(message = "角色 Prompt 不能为空")
+    private String promptTemplate;
 }
