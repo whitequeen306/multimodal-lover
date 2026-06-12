@@ -20,5 +20,9 @@ Thumbs.db
 .env.local
 .env.production
 
+# Node
+node_modules/
+dist/
+
 # Logs
 *.log
