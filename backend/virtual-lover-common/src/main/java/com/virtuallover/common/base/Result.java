@@ -18,6 +18,10 @@ public class Result<T> {
         return new Result<>(ErrorCode.OK.getCode(), ErrorCode.OK.getMessage(), data);
     }
 
+    public static <T> Result<T> ok() {
+        return new Result<>(ErrorCode.OK.getCode(), ErrorCode.OK.getMessage(), null);
+    }
+
     public static <T> Result<T> fail(int code, String msg) {
         return new Result<>(code, msg, null);
     }
