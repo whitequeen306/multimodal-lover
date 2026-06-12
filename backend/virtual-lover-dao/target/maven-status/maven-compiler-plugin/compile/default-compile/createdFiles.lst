@@ -1,0 +1,8 @@
+com\virtuallover\dao\mapper\MessageMapper.class
+com\virtuallover\dao\mapper\UserMapper.class
+com\virtuallover\dao\entity\Character.class
+com\virtuallover\dao\entity\Conversation.class
+com\virtuallover\dao\mapper\CharacterMapper.class
+com\virtuallover\dao\entity\User.class
+com\virtuallover\dao\mapper\ConversationMapper.class
+com\virtuallover\dao\entity\Message.class
