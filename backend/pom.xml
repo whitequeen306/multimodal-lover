@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.virtuallover</groupId>
+    <artifactId>multimodal-lover</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>MultiModal-Lover</name>
+    <description>Multi-modal Virtual Lover — Qiniu Training Camp Project</description>
+
+    <modules>
+        <module>virtual-lover-common</module>
+        <module>virtual-lover-dao</module>
+        <module>virtual-lover-storage</module>
+        <module>virtual-lover-security</module>
+        <module>virtual-lover-ai</module>
+        <module>virtual-lover-service</module>
+        <module>virtual-lover-web</module>
+        <module>virtual-lover-app</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.version>3.3.5</spring-boot.version>
+        <spring-ai.version>1.0.0</spring-ai.version>
+        <spring-security-crypto.version>6.3.4</spring-security-crypto.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <mysql-connector.version>8.4.0</mysql-connector.version>
+        <flyway.version>10.20.1</flyway.version>
+        <sa-token.version>1.39.0</sa-token.version>
+        <qiniu.version>7.15.0</qiniu.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <lombok.version>1.18.34</lombok.version>
+        <commons-pool2.version>2.12.0</commons-pool2.version>
+        <hutool.version>5.8.34</hutool.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Internal modules -->
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-common</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-dao</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-storage</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-security</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-ai</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-service</artifactId><version>${project.version}</version></dependency>
+            <dependency><groupId>com.virtuallover</groupId><artifactId>virtual-lover-web</artifactId><version>${project.version}</version></dependency>
+            <!-- Third-party -->
+            <dependency><groupId>com.baomidou</groupId><artifactId>mybatis-plus-spring-boot3-starter</artifactId><version>${mybatis-plus.version}</version></dependency>
+            <dependency><groupId>com.mysql</groupId><artifactId>mysql-connector-j</artifactId><version>${mysql-connector.version}</version></dependency>
+            <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-mysql</artifactId><version>${flyway.version}</version></dependency>
+            <dependency><groupId>cn.dev33</groupId><artifactId>sa-token-spring-boot3-starter</artifactId><version>${sa-token.version}</version></dependency>
+            <dependency><groupId>cn.dev33</groupId><artifactId>sa-token-redis-jackson</artifactId><version>${sa-token.version}</version></dependency>
+            <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-crypto</artifactId><version>${spring-security-crypto.version}</version></dependency>
+            <dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-starter-model-openai</artifactId><version>${spring-ai.version}</version></dependency>
+            <dependency><groupId>com.qiniu</groupId><artifactId>qiniu-java-sdk</artifactId><version>${qiniu.version}</version></dependency>
+            <dependency><groupId>com.github.xiaoymin</groupId><artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId><version>${knife4j.version}</version></dependency>
+            <dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${lombok.version}</version></dependency>
+            <dependency><groupId>org.apache.commons</groupId><artifactId>commons-pool2</artifactId><version>${commons-pool2.version}</version></dependency>
+            <dependency><groupId>cn.hutool</groupId><artifactId>hutool-all</artifactId><version>${hutool.version}</version></dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
