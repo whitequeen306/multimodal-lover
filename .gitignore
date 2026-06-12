@@ -16,7 +16,8 @@
 .DS_Store
 Thumbs.db
 
-# Environment (keep .env; template if needed)
+# Environment
+.env
 .env.local
 .env.production
 
