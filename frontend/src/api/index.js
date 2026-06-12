@@ -37,15 +37,20 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      const { status } = error.response
+      const { status, data } = error.response
       if (status === 401) {
         localStorage.removeItem('vlover-token')
-        // 不在登录页的时候才跳转
         if (window.location.pathname !== '/login') {
           window.location.href = '/login'
         }
+        ElMessage.error(data?.message || '请先登录后再操作')
         return Promise.reject(error)
       }
+      // 提取错误消息（兼容 Result<T> 和 Spring 默认错误格式）
+      const msg = data?.message || data?.error || (typeof data === 'string' ? data : '操作失败，请稍后重试')
+      ElMessage.error(msg)
+    } else if (error.message && error.message !== 'canceled') {
+      ElMessage.error(error.message)
     }
     return Promise.reject(error)
   }
