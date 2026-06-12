@@ -38,11 +38,21 @@ public class CharacterService {
     }
 
     public List<Character> listByUser(Long userId) {
-        return characterMapper.selectList(
+        List<Character> list = characterMapper.selectList(
                 new LambdaQueryWrapper<Character>()
                         .eq(Character::getOwnerUserId, userId)
                         .orderByAsc(Character::getIsBuiltin)
                         .orderByDesc(Character::getCreatedAt));
+        // 老用户补偿：注册时若因历史 bug 未创建内置角色，这里自动补上
+        if (list.isEmpty()) {
+            createBuiltinCharacter(userId);
+            list = characterMapper.selectList(
+                    new LambdaQueryWrapper<Character>()
+                            .eq(Character::getOwnerUserId, userId)
+                            .orderByAsc(Character::getIsBuiltin)
+                            .orderByDesc(Character::getCreatedAt));
+        }
+        return list;
     }
 
     public Character getById(Long characterId) {
