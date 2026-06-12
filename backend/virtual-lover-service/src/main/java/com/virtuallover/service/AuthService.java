@@ -8,6 +8,8 @@ import com.virtuallover.common.util.UserInputSanitizer;
 import com.virtuallover.dao.entity.User;
 import com.virtuallover.dao.mapper.UserMapper;
 import com.virtuallover.security.PasswordEncoder;
+import com.virtuallover.service.dto.UpdateProfileRequest;
+import com.virtuallover.storage.MinioStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final CharacterService characterService;
+    private final MinioStorageService minioStorageService;
 
     public String register(String username, String password, String nickname) {
         // Sanitize user input
@@ -56,5 +59,24 @@ public class AuthService {
     public User getCurrentUser() {
         long userId = StpUtil.getLoginIdAsLong();
         return userMapper.selectById(userId);
+    }
+
+    public User updateProfile(Long userId, UpdateProfileRequest request) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        if (request.getNickname() != null) {
+            user.setNickname(UserInputSanitizer.sanitizeGenerationDescription(request.getNickname()));
+        }
+        if (request.getAvatarUrl() != null) {
+            String avatarUrl = request.getAvatarUrl().isBlank() ? null : request.getAvatarUrl().trim();
+            if (avatarUrl != null) {
+                minioStorageService.validateUserAvatarUrl(userId, avatarUrl);
+            }
+            user.setAvatarUrl(avatarUrl);
+        }
+        userMapper.updateById(user);
+        return user;
     }
 }

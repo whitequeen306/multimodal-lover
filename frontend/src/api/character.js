@@ -27,5 +27,5 @@ export function uploadAvatar(file) {
 }
 
 export function generateCharacter(characterName) {
-  return api.post('/character/generate', { characterName })
+  return api.post('/character/generate', { characterName }, { timeout: 120000 })
 }

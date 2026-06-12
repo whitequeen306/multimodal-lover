@@ -7,7 +7,7 @@ import com.virtuallover.common.base.Result;
 import com.virtuallover.dao.entity.Character;
 import com.virtuallover.service.CharacterService;
 import com.virtuallover.service.dto.CreateCharacterRequest;
-import com.virtuallover.storage.QiniuStorageService;
+import com.virtuallover.storage.MinioStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CharacterController {
     private final CharacterService characterService;
-    private final QiniuStorageService qiniuStorageService;
+    private final MinioStorageService minioStorageService;
     private final AiChatService aiChatService;
     private final ObjectMapper objectMapper;
 
@@ -39,7 +39,7 @@ public class CharacterController {
 
     @GetMapping("/{id}")
     public Result<Character> get(@PathVariable Long id) {
-        return Result.ok(characterService.getById(id));
+        return Result.ok(characterService.getById(StpUtil.getLoginIdAsLong(), id));
     }
 
     @PostMapping
@@ -61,7 +61,8 @@ public class CharacterController {
     @Operation(summary = "上传角色头像")
     @PostMapping("/avatar-upload")
     public Result<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file) {
-        String url = qiniuStorageService.uploadChatImage(file, StpUtil.getLoginIdAsLong());
+        String url = minioStorageService.uploadAvatar(
+                file, StpUtil.getLoginIdAsLong(), "character-avatars");
         return Result.ok(Map.of("avatarUrl", url));
     }
 
@@ -77,9 +78,11 @@ public class CharacterController {
             var node = objectMapper.readTree(json);
             return Result.ok(Map.of(
                     "name", node.has("name") ? node.get("name").asText() : request.getCharacterName(),
+                    "gender", node.has("gender") ? node.get("gender").asText() : "",
                     "personality", node.has("personality") ? node.get("personality").asText() : "",
                     "speakingStyle", node.has("speakingStyle") ? node.get("speakingStyle").asText() : "",
-                    "backstory", node.has("backstory") ? node.get("backstory").asText() : ""
+                    "backstory", node.has("backstory") ? node.get("backstory").asText() : "",
+                    "promptTemplate", node.has("promptTemplate") ? node.get("promptTemplate").asText() : ""
             ));
         } catch (Exception e) {
             log.warn("Failed to parse AI persona JSON, raw: {}", raw);

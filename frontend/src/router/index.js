@@ -13,6 +13,12 @@ const routes = [
     meta: { auth: true }
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/pages/ProfilePage.vue'),
+    meta: { auth: true }
+  },
+  {
     path: '/chat/:id',
     name: 'Chat',
     component: () => import('@/pages/ChatPage.vue'),

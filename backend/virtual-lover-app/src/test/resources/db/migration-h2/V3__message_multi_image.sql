@@ -1,0 +1,1 @@
+-- Columns included in V1 for H2 test schema
