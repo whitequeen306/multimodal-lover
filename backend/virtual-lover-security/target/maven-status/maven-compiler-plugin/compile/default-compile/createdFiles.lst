@@ -1,0 +1,3 @@
+com\virtuallover\security\StpInterfaceImpl.class
+com\virtuallover\security\SaTokenConfig.class
+com\virtuallover\security\PasswordEncoder.class
