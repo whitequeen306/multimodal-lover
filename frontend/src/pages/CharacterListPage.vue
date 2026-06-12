@@ -56,6 +56,27 @@
       width="500px"
       :close-on-click-modal="false"
     >
+      <!-- AI 生成区块 -->
+      <div class="ai-generate-box">
+        <div class="ai-generate-tip">💡 点击此处可以快捷生成想要的动漫游戏角色</div>
+        <div class="ai-generate-row">
+          <el-input
+            v-model="generateName"
+            placeholder="输入动漫/游戏角色名，如：时崎狂三"
+            :disabled="generateLoading"
+            @keyup.enter="handleGenerate"
+          />
+          <el-button
+            type="primary"
+            :loading="generateLoading"
+            :disabled="!generateName.trim()"
+            @click="handleGenerate"
+          >
+            {{ generateLoading ? 'AI 生成中...' : '✨ AI 生成设定' }}
+          </el-button>
+        </div>
+      </div>
+
       <el-form
         ref="dialogFormRef"
         :model="dialogForm"
@@ -73,8 +94,23 @@
             placeholder="描述角色的性格特点..."
           />
         </el-form-item>
-        <el-form-item label="头像 URL" prop="avatarUrl">
-          <el-input v-model="dialogForm.avatarUrl" placeholder="可选，输入图片 URL" />
+        <el-form-item label="角色头像">
+          <div class="avatar-upload">
+            <div class="avatar-preview" v-if="dialogForm.avatarUrl">
+              <img :src="dialogForm.avatarUrl" alt="预览" />
+              <el-button type="danger" size="small" circle @click="dialogForm.avatarUrl = ''">×</el-button>
+            </div>
+            <el-upload
+              v-else
+              :show-file-list="false"
+              :before-upload="handleAvatarUpload"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              drag
+            >
+              <el-icon :size="32"><Plus /></el-icon>
+              <div>点击或拖拽上传头像</div>
+            </el-upload>
+          </div>
         </el-form-item>
         <el-form-item label="角色设定 (System Prompt)" prop="systemPrompt">
           <el-input
@@ -100,7 +136,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Edit, Delete, User, SwitchButton } from '@element-plus/icons-vue'
-import { listCharacters, createCharacter, updateCharacter, deleteCharacter } from '@/api/character'
+import { listCharacters, createCharacter, updateCharacter, deleteCharacter, uploadAvatar, generateCharacter } from '@/api/character'
 import { createConversation, listConversations } from '@/api/conversation'
 
 const router = useRouter()
@@ -112,6 +148,10 @@ const dialogVisible = ref(false)
 const dialogLoading = ref(false)
 const editingChar = ref(null)
 const dialogFormRef = ref(null)
+
+// AI generation state
+const generateName = ref('')
+const generateLoading = ref(false)
 
 const dialogForm = reactive({
   name: '',
@@ -165,6 +205,44 @@ function openEditDialog(char) {
   dialogForm.avatarUrl = char.avatarUrl || ''
   dialogForm.systemPrompt = char.systemPrompt || ''
   dialogVisible.value = true
+}
+
+async function handleGenerate() {
+  const name = generateName.value.trim()
+  if (!name) return
+  generateLoading.value = true
+  try {
+    const res = await generateCharacter(name)
+    const data = res.data || {}
+    dialogForm.name = data.name || name
+    dialogForm.personality = data.personality || ''
+    // 将说话风格合并进性格描述
+    if (data.speakingStyle) {
+      dialogForm.personality += '\n说话风格：' + data.speakingStyle
+    }
+    // backstory 放入 systemPrompt
+    if (data.backstory) {
+      dialogForm.systemPrompt = '背景：' + data.backstory
+    }
+    ElMessage.success('角色设定已生成，你可以继续修改')
+  } catch {
+    // handled by interceptor
+  } finally {
+    generateLoading.value = false
+  }
+}
+
+async function handleAvatarUpload(file) {
+  const isImage = file.type.startsWith('image/')
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isImage) { ElMessage.error('只能上传图片文件'); return false }
+  if (!isLt5M) { ElMessage.error('图片大小不能超过 5MB'); return false }
+  try {
+    const res = await uploadAvatar(file)
+    dialogForm.avatarUrl = res.data?.avatarUrl || ''
+    ElMessage.success('头像上传成功')
+  } catch { /* handled by interceptor */ }
+  return false // 阻止 el-upload 的默认上传行为
 }
 
 async function handleDialogSubmit() {
@@ -362,5 +440,55 @@ function handleLogout() {
 
 .character-card:hover .card-actions {
   opacity: 1;
+}
+
+/* AI generate box */
+.ai-generate-box {
+  background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px dashed #ce93d8;
+}
+
+.ai-generate-tip {
+  font-size: 13px;
+  color: #7c4dff;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.ai-generate-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ai-generate-row .el-input {
+  flex: 1;
+}
+
+/* Avatar upload */
+.avatar-upload {
+  text-align: center;
+}
+
+.avatar-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-preview img {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.avatar-preview .el-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
 }
 </style>

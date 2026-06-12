@@ -1,7 +1,7 @@
 import api from './index'
 
 export function listCharacters() {
-  return api.get('/character/list')
+  return api.get('/character')
 }
 
 export function getCharacter(id) {
@@ -18,4 +18,14 @@ export function updateCharacter(id, data) {
 
 export function deleteCharacter(id) {
   return api.delete(`/character/${id}`)
+}
+
+export function uploadAvatar(file) {
+  const fd = new FormData()
+  fd.append('file', file)
+  return api.post('/character/avatar-upload', fd)
+}
+
+export function generateCharacter(characterName) {
+  return api.post('/character/generate', { characterName })
 }

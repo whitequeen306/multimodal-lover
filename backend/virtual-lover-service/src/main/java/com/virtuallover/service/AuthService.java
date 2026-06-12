@@ -47,7 +47,7 @@ public class AuthService {
         User user = userMapper.selectOne(
                 new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "账号或密码错误，请检查后重试");
         }
         StpUtil.login(user.getId());
         return StpUtil.getTokenValue();
