@@ -5,7 +5,7 @@ export function createConversation(data) {
 }
 
 export function listConversations() {
-  return api.get('/conversation/list')
+  return api.get('/conversation')
 }
 
 export function getConversation(id) {
@@ -23,9 +23,8 @@ export function getMessages(id, params) {
 export function uploadImage(file) {
   const formData = new FormData()
   formData.append('file', file)
-  return api.post('/conversation/upload-image', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  // 不要手动设 Content-Type，浏览器会自动加 boundary
+  return api.post('/conversation/upload-image', formData)
 }
 
 /**
