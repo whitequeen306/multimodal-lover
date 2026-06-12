@@ -1,0 +1,142 @@
+/* MultiModal Lover — 夜信 NightLetter design system */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+:root {
+  --font-display: 'Zen Maru Gothic', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Outfit', 'PingFang SC', sans-serif;
+
+  --bg-deep: #0c0b10;
+  --bg-base: #121018;
+  --bg-surface: #1a1724;
+  --bg-elevated: #221f2e;
+  --bg-glass: rgba(34, 31, 46, 0.72);
+
+  --text-primary: #f4ede6;
+  --text-secondary: #b8b0bc;
+  --text-muted: #7a7382;
+
+  --accent: #ff6b7a;
+  --accent-soft: #ffb3bc;
+  --accent-deep: #e84561;
+  --accent-glow: rgba(255, 107, 122, 0.35);
+
+  --user-bubble: linear-gradient(135deg, #ff6b7a 0%, #e84561 100%);
+  --assistant-bubble: rgba(255, 255, 255, 0.06);
+  --assistant-border: rgba(255, 255, 255, 0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 40px var(--accent-glow);
+
+  --el-color-primary: #ff6b7a;
+  --el-color-primary-light-3: #ff9aa4;
+  --el-color-primary-light-5: #ffb3bc;
+  --el-color-primary-light-7: #ffccd2;
+  --el-color-primary-light-9: #ffe8eb;
+  --el-color-primary-dark-2: #e84561;
+  --el-bg-color: var(--bg-surface);
+  --el-bg-color-overlay: var(--bg-elevated);
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-placeholder: var(--text-muted);
+  --el-border-color: rgba(255, 255, 255, 0.08);
+  --el-border-color-light: rgba(255, 255, 255, 0.05);
+  --el-fill-color-blank: var(--bg-elevated);
+  --el-mask-color: rgba(8, 7, 12, 0.75);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(255, 107, 122, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(232, 69, 97, 0.08), transparent 50%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-base) 100%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+#app-root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+/* Element Plus dark overrides */
+.el-button--primary {
+  --el-button-bg-color: var(--accent);
+  --el-button-border-color: var(--accent);
+  --el-button-hover-bg-color: var(--accent-deep);
+  --el-button-hover-border-color: var(--accent-deep);
+}
+
+.el-input__wrapper,
+.el-textarea__inner {
+  background: var(--bg-elevated) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+}
+
+.el-input__wrapper:hover,
+.el-textarea__inner:hover {
+  box-shadow: 0 0 0 1px rgba(255, 107, 122, 0.25) inset !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--accent) inset !important;
+}
+
+.el-dialog {
+  background: var(--bg-elevated) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.el-empty__description p {
+  color: var(--text-muted);
+}
+
+.el-message {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
+}

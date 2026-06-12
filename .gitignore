@@ -16,7 +16,7 @@
 .DS_Store
 Thumbs.db
 
-# Environment
+# Environment（只提交 .env.example，勿提交真实密钥）
 .env
 .env.local
 .env.production
@@ -27,3 +27,12 @@ dist/
 
 # Logs
 *.log
+
+# AI / 编辑器本地产物（不提交）
+.specstory/
+.cursor/
+
+# 脚本生成物（可本地复现：python scripts/benchmark_acg_vl.py）
+scripts/benchmark_acg_results.json
+
+# CodeGraph：目录可提交（含 .codegraph/.gitignore），本地索引库 *.db / cache 由该目录内规则忽略
