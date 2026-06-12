@@ -21,25 +21,31 @@ api.interceptors.request.use(
 // Response interceptor — 401 redirect to login
 api.interceptors.response.use(
   (response) => {
-    // 后端统一返回 Result<T> {code,message,data}，这里拆出 data
     const body = response.data
-    if (body && typeof body === 'object' && 'code' in body && 'data' in body) {
-      return { ...response, data: body.data }
+    if (body && typeof body === 'object' && 'code' in body) {
+      if (body.code !== 0) {
+        // 业务失败：显示错误消息，但仍返回给调用方处理
+        ElMessage.error(body.message || '操作失败')
+        return Promise.reject(new Error(body.message || '操作失败'))
+      }
+      // 成功：拆出 data
+      if ('data' in body) {
+        return { ...response, data: body.data }
+      }
     }
     return response
   },
   (error) => {
     if (error.response) {
-      const { status, data } = error.response
+      const { status } = error.response
       if (status === 401) {
         localStorage.removeItem('vlover-token')
-        window.location.href = '/login'
+        // 不在登录页的时候才跳转
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
         return Promise.reject(error)
       }
-      const message = data?.message || data?.error || `Request failed (${status})`
-      ElMessage.error(message)
-    } else {
-      ElMessage.error('Network error — please check your connection')
     }
     return Promise.reject(error)
   }
