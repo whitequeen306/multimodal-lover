@@ -20,7 +20,14 @@ api.interceptors.request.use(
 
 // Response interceptor — 401 redirect to login
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 后端统一返回 Result<T> {code,message,data}，这里拆出 data
+    const body = response.data
+    if (body && typeof body === 'object' && 'code' in body && 'data' in body) {
+      return { ...response, data: body.data }
+    }
+    return response
+  },
   (error) => {
     if (error.response) {
       const { status, data } = error.response
