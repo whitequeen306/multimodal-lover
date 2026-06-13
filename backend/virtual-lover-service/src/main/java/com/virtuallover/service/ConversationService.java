@@ -251,6 +251,18 @@ public class ConversationService {
             systemPrompt += "\n\n=== 会话内历史图片摘要 ===\n" + priorImageContext;
         }
 
+        int historyUserWithVision = (int) history.stream()
+                .filter(m -> "user".equals(m.getRole()))
+                .filter(m -> m.getVisionContext() != null && !m.getVisionContext().isBlank())
+                .count();
+        log.info("[CTX_ASSEMBLY] convId={} historyMessages={} contextWindow={} currentHasVision={} "
+                        + "priorImageInSystem={} historyUserMsgsWithVision={}",
+                convId, history.size(), contextWindow, visionAnalysis != null,
+                priorImageContext != null, historyUserWithVision);
+        if (priorImageContext != null) {
+            log.info("[CTX_PRIOR_IMAGE] convId={} summary={}", convId, priorImageContext);
+        }
+
         String visionContext = visionAnalysis != null ? visionAnalysis.toContextBlock() : null;
         List<org.springframework.ai.chat.messages.Message> aiMessages = new ArrayList<>();
         aiMessages.add(new SystemMessage(systemPrompt));
@@ -377,9 +389,10 @@ public class ConversationService {
         String cacheKey = visionCacheKey(imageUrls);
         String cached = redisTemplate.opsForValue().get(cacheKey);
         if (cached != null && !cached.isBlank()) {
-            log.debug("Vision cache hit, key={}", cacheKey);
+            log.info("[VL_CACHE_HIT] key={} contextBlock={}", cacheKey, cached);
             return visionResultParser.parseContextBlock(cached);
         }
+        log.info("[VL_CACHE_MISS] key={} imageCount={}", cacheKey, imageUrls.size());
 
         List<VisionImageInput> inputs = new ArrayList<>();
         for (String url : imageUrls) {

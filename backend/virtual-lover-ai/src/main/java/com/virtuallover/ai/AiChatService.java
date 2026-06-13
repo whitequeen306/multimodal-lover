@@ -186,7 +186,9 @@ public class AiChatService {
                 log.warn("VL analyze returned empty text for ref={}", logRef);
                 return VisionAnalysisResult.fallback("无法识别这张图片的内容");
             }
-            VisionAnalysisResult parsed = visionResultParser.parse(text.trim());
+            String vlRaw = text.trim();
+            log.info("[VL_RAW_JSON] ref={} model={} json={}", logRef, visionModel, vlRaw);
+            VisionAnalysisResult parsed = visionResultParser.parse(vlRaw);
             VisionSubIntent mergedIntent = userIntentDetector.merge(parsed.subIntent(),
                     userIntentDetector.detect(userText));
             VisionAnalysisResult result = new VisionAnalysisResult(
@@ -201,6 +203,7 @@ public class AiChatService {
             log.info("Image analyzed via {}, category={}, quality={}, intent={}, images={}, ref={}",
                     visionModel, result.category(), result.quality(), result.subIntent(),
                     result.imageCount(), logRef);
+            log.info("[VL_CONTEXT_BLOCK] ref={} block={}", logRef, result.toContextBlock());
             return result;
         } catch (BusinessException e) {
             throw e;

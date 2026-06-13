@@ -49,8 +49,9 @@ public class CharacterService {
                         .eq(Character::getOwnerUserId, userId)
                         .orderByAsc(Character::getIsBuiltin)
                         .orderByDesc(Character::getCreatedAt));
-        // 老用户补偿：注册时若因历史 bug 未创建内置角色，这里自动补上
-        if (list.isEmpty()) {
+        // 老用户补偿：若缺少内置角色（含仅有自定义角色、或历史 bug 未创建），自动补上
+        boolean hasBuiltin = list.stream().anyMatch(c -> c.getIsBuiltin() != null && c.getIsBuiltin() == 1);
+        if (!hasBuiltin) {
             createBuiltinCharacter(userId);
             list = characterMapper.selectList(
                     new LambdaQueryWrapper<Character>()
