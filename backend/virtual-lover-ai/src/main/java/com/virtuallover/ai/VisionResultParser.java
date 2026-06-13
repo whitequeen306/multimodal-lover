@@ -97,8 +97,11 @@ public class VisionResultParser {
     private VisionAnalysisResult tryParseJson(String text) {
         String json = extractJsonObject(text);
         if (json == null) {
+            log.info("[VL_PARSE] no JSON object extracted, will use legacy format, preview={}",
+                    text.length() > 200 ? text.substring(0, 200) + "…" : text);
             return null;
         }
+        log.info("[VL_EXTRACTED_JSON] {}", json);
         try {
             JsonNode root = objectMapper.readTree(json);
             if (root.has("images") && root.get("images").isArray()) {
@@ -108,7 +111,7 @@ public class VisionResultParser {
                 return parseSingleImageJson(root);
             }
         } catch (Exception e) {
-            log.debug("VL JSON parse failed, fallback to legacy format");
+            log.warn("[VL_PARSE] JSON parse failed, fallback to legacy format, json={}", json);
         }
         return null;
     }
